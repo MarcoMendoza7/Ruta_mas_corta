@@ -1,0 +1,52 @@
+[
+  {
+    "nombre": "Aeropuerto Internacional de la Ciudad de México (AICM)",
+    "lat": 19.4361,
+    "lng": -99.0719
+  },
+  {
+    "nombre": "Aeropuerto Internacional de Guadalajara (GDL)",
+    "lat": 20.5218,
+    "lng": -103.3103
+  },
+  {
+    "nombre": "Aeropuerto Internacional de Monterrey (MTY)",
+    "lat": 25.7785,
+    "lng": -100.1070
+  },
+  {
+    "nombre": "Aeropuerto Internacional de Cancún (CUN)",
+    "lat": 21.0365,
+    "lng": -86.8771
+  },
+  {
+    "nombre": "Aeropuerto Internacional de Tijuana (TIJ)",
+    "lat": 32.5411,
+    "lng": -116.9706
+  },
+  {
+    "nombre": "Aeropuerto Internacional de Mérida (MID)",
+    "lat": 20.9349,
+    "lng": -89.6577
+  },
+  {
+    "nombre": "Aeropuerto Internacional de Puebla (PBC)",
+    "lat": 19.1583,
+    "lng": -98.3714
+  },
+  {
+    "nombre": "Aeropuerto Internacional de Querétaro (QRO)",
+    "lat": 20.6173,
+    "lng": -100.1857
+  },
+  {
+    "nombre": "Aeropuerto Internacional de León (BJX)",
+    "lat": 20.9935,
+    "lng": -101.4810
+  },
+  {
+    "nombre": "Aeropuerto Internacional de Oaxaca (OAX)",
+    "lat": 16.9991,
+    "lng": -96.7266
+  }
+]

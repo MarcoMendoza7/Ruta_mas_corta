@@ -1,0 +1,85 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #1b1b1b;
+    color: #ffffff;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #2b2b2b;
+    border-radius: 15px;
+    box-shadow: 0 0 15px rgba(255, 102, 0, 0.5);
+    margin-top: 40px;
+}
+
+h1 {
+    text-align: center;
+    color: #ff6f00; /* Naranja fuerte */
+    margin-bottom: 30px;
+}
+
+#formulario {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    background-color: #43a047; /* Verde fuerte */
+    padding: 15px;
+    border-radius: 10px;
+}
+
+label {
+    color: #fff;
+    font-weight: bold;
+}
+
+select, input[type="text"] {
+    padding: 10px;
+    border: 2px solid #ff6f00;
+    border-radius: 5px;
+    background-color: #1c1c1c;
+    color: white;
+    min-width: 150px;
+}
+
+select:focus, input:focus {
+    outline: none;
+    border-color: #ffa000;
+}
+
+button {
+    background-color: #ff6f00;
+    color: #fff;
+    padding: 10px 25px;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background 0.3s;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #ffa000;
+}
+
+#mapa {
+    height: 450px;
+    width: 100%;
+    margin-top: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(67, 160, 71, 0.7);
+}
+
+#info {
+    margin-top: 20px;
+    background-color: #1e1e1e;
+    border-left: 6px solid #43a047;
+    padding: 15px;
+    font-size: 1.1em;
+    color: #eee;
+    border-radius: 8px;
+}

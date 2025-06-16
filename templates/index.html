@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Calcula tu Ruta - Diseño Horizontal</title>
+  <link rel="icon" href="{{ url_for('static', filename='fabicon.ico') }}" type="image/x-icon" />
+  <style>
+    /* RESET */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    body, html {
+      margin: 0; padding: 0; height: 100%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #007f5f, #2ac56c);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+    }
+    #app {
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100vw;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+      border-radius: 12px;
+      margin: 12px;
+      background: #003826;
+      overflow: hidden;
+    }
+
+    /* BARRA SUPERIOR */
+    #panel {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      gap: 12px;
+      background: #05885e;
+      border-radius: 12px 12px 0 0;
+      flex-wrap: wrap;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.4);
+    }
+
+    #panel h1 {
+      flex: 1 1 100%;
+      margin: 0 0 6px 0;
+      font-weight: 900;
+      font-size: 1.8rem;
+      text-align: center;
+      color: #ff7f50;
+      user-select: text;
+    }
+
+    /* Inputs */
+    #search-origen, #search-destino {
+      flex: 1 1 200px;
+      min-width: 160px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: none;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #004d40;
+    }
+    #search-origen::placeholder,
+    #search-destino::placeholder {
+      color: #00695c;
+      font-weight: 500;
+    }
+
+    /* Botones */
+    #btn-buscar, #btn-clear {
+      background: #ff7f50;
+      color: white;
+      border: none;
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(255,127,80,0.6);
+      transition: background-color 0.3s ease;
+      flex: 0 0 auto;
+      min-width: 100px;
+    }
+    #btn-buscar:hover {
+      background: #ff5e26;
+    }
+    #btn-clear:hover {
+      background: #cc6438;
+    }
+
+    /* Selectores */
+    .selector-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 140px;
+      font-weight: 700;
+      color: #a3f7bf;
+    }
+    .selector-group label {
+      font-size: 0.85rem;
+      user-select: text;
+    }
+    .selector-group select {
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: none;
+      font-weight: 700;
+      font-size: 1rem;
+      color: #004d40;
+      cursor: pointer;
+    }
+    .selector-group select:hover,
+    .selector-group select:focus {
+      outline: 2px solid #ff7f50;
+      background: #a3f7bf;
+    }
+
+    /* CONTENEDOR MAPA */
+    #map {
+      flex-grow: 1;
+      border-radius: 0 0 12px 12px;
+      width: 100%;
+    }
+
+    /* RESULTADOS */
+    #resultado {
+      position: absolute;
+      bottom: 16px;
+      left: 16px;
+      background: rgba(255,255,255,0.9);
+      color: #004d40;
+      padding: 14px 20px;
+      border-radius: 12px;
+      max-width: 320px;
+      font-weight: 700;
+      font-size: 1rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      user-select: text;
+    }
+
+    #instrucciones {
+      position: absolute;
+      bottom: 16px;
+      right: 16px;
+      background: rgba(255,255,255,0.9);
+      color: #004d40;
+      padding: 14px 20px;
+      border-radius: 12px;
+      max-width: 320px;
+      max-height: 200px;
+      overflow-y: auto;
+      font-weight: 600;
+      font-size: 0.9rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      user-select: text;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      #panel {
+        flex-direction: column;
+        gap: 8px;
+        border-radius: 12px;
+        padding: 16px;
+      }
+      #btn-buscar, #btn-clear {
+        width: 100%;
+        min-width: unset;
+      }
+      #search-origen, #search-destino {
+        width: 100%;
+        min-width: unset;
+      }
+      .selector-group {
+        width: 100%;
+        min-width: unset;
+      }
+      #resultado, #instrucciones {
+        position: static;
+        max-width: 100%;
+        max-height: none;
+        margin-top: 10px;
+        color: #003826;
+        background: #a3f7bf;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <section id="panel" aria-label="Panel de control">
+      <h1>Calcula tu ruta 🚗</h1>
+
+      <input id="search-origen" type="text" placeholder="Lugar de origen" autocomplete="off" />
+      <input id="search-destino" type="text" placeholder="Lugar de destino" autocomplete="off" />
+
+      <button id="btn-buscar" aria-label="Buscar ruta">Buscar ruta</button>
+      <button id="btn-clear" aria-label="Limpiar mapa">Limpiar mapa</button>
+
+      <div class="selector-group">
+        <label for="tipoVehiculo">Tipo vehículo:</label>
+        <select id="tipoVehiculo" aria-label="Seleccionar tipo de vehículo">
+          <option value="auto">Auto (12 km/l)</option>
+          <option value="camioneta">Camioneta (8 km/l)</option>
+          <option value="moto">Moto (25 km/l)</option>
+          <option value="camion">Camión (4 km/l)</option>
+        </select>
+      </div>
+
+      <div class="selector-group">
+        <label for="horario">Horario:</label>
+        <select id="horario" aria-label="Seleccionar horario">
+          <option value="dia">Día (más tráfico)</option>
+          <option value="noche">Noche (menos tráfico)</option>
+        </select>
+      </div>
+    </section>
+
+    <div id="map"></div>
+
+    <div id="resultado" aria-live="polite" aria-atomic="true">
+      Haz clic en el mapa o usa el buscador para elegir origen y destino.
+    </div>
+    <div id="instrucciones" aria-live="polite" aria-atomic="true"></div>
+  </div>
+
+<script>
+  let map, origen = null, destino = null, marcadores = [];
+  let directionsService, directionsRenderer;
+  let autocompleteOrigen, autocompleteDestino;
+
+  function obtenerRendimientoPorVehiculo() {
+    const tipo = document.getElementById("tipoVehiculo").value;
+    switch (tipo) {
+      case "auto": return 12;
+      case "camioneta": return 8;
+      case "moto": return 25;
+      case "camion": return 4;
+      default: return 12;
+    }
+  }
+
+  function initMap() {
+    map = new google.maps.Map(document.getElementById("map"), {
+      center: { lat: 23.6345, lng: -102.5528 }, // México
+      zoom: 5,
+      mapTypeControl: false,
+      streetViewControl: false,
+    });
+
+    directionsService = new google.maps.DirectionsService();
+    directionsRenderer = new google.maps.DirectionsRenderer({
+      map: map,
+      suppressMarkers: true,
+    });
+
+    map.addListener("click", (e) => {
+      if (!origen) {
+        origen = e.latLng;
+        agregarMarcador(origen, "A");
+        document.getElementById("search-origen").value = "";
+      } else if (!destino) {
+        destino = e.latLng;
+        agregarMarcador(destino, "B");
+        document.getElementById("search-destino").value = "";
+        calcularRuta(origen, destino);
+      }
+    });
+
+    const opcionesAutocomplete = {
+      fields: ["geometry", "name"],
+      componentRestrictions: { country: "mx" }
+    };
+
+    autocompleteOrigen = new google.maps.places.Autocomplete(
+      document.getElementById("search-origen"), opcionesAutocomplete);
+    autocompleteDestino = new google.maps.places.Autocomplete(
+      document.getElementById("search-destino"), opcionesAutocomplete);
+
+    map.addListener('bounds_changed', () => {
+      const bounds = map.getBounds();
+      autocompleteOrigen.setBounds(bounds);
+      autocompleteDestino.setBounds(bounds);
+    });
+
+    autocompleteOrigen.addListener("place_changed", () => {
+      const place = autocompleteOrigen.getPlace();
+      if (!place.geometry) return alert("No se encontró el lugar de origen.");
+      origen = place.geometry.location;
+      eliminarMarcador("A");
+      agregarMarcador(origen, "A");
+      map.panTo(origen);
+      if (origen && destino) calcularRuta(origen, destino);
+    });
+
+    autocompleteDestino.addListener("place_changed", () => {
+      const place = autocompleteDestino.getPlace();
+      if (!place.geometry) return alert("No se encontró el lugar de destino.");
+      destino = place.geometry.location;
+      eliminarMarcador("B");
+      agregarMarcador(destino, "B");
+      map.panTo(destino);
+      if (origen && destino) calcularRuta(origen, destino);
+    });
+
+    document.getElementById("btn-buscar").addEventListener("click", () => {
+      if (origen && destino) {
+        calcularRuta(origen, destino);
+      } else {
+        alert("Selecciona un origen y un destino.");
+      }
+    });
+
+    document.getElementById("btn-clear").onclick = limpiarMapa;
+
+    document.getElementById("tipoVehiculo").addEventListener("change", () => {
+      if (origen && destino) calcularRuta(origen, destino);
+    });
+
+    document.getElementById("horario").addEventListener("change", () => {
+      if (origen && destino) calcularRuta(origen, destino);
+    });
+  }
+
+  function agregarMarcador(posicion, label) {
+    eliminarMarcador(label);
+    const marcador = new google.maps.Marker({ position: posicion, map: map, label });
+    marcadores.push(marcador);
+  }
+
+  function eliminarMarcador(label) {
+    for (let i = marcadores.length - 1; i >= 0; i--) {
+      if (marcadores[i].label === label) {
+        marcadores[i].setMap(null);
+        marcadores.splice(i, 1);
+      }
+    }
+  }
+
+  function updateResultado(html) {
+    document.getElementById("resultado").innerHTML = html;
+  }
+
+  function calcularRuta(origen, destino) {
+    directionsService.route(
+      {
+        origin: origen,
+        destination: destino,
+        travelMode: google.maps.TravelMode.DRIVING,
+      },
+      (result, status) => {
+        if (status === "OK") {
+          directionsRenderer.setDirections(result);
+          const leg = result.routes[0].legs[0];
+
+          const distanciaKm = leg.distance.value / 1000;
+          let duracionSegundos = leg.duration.value;
+
+          const horario = document.getElementById("horario").value;
+          duracionSegundos *= (horario === "dia") ? 1.3 : 0.8;
+
+          const horas = Math.floor(duracionSegundos / 3600);
+          const minutos = Math.round((duracionSegundos % 3600) / 60);
+          const duracionAjustada = `${horas > 0 ? horas + "h " : ""}${minutos}min`;
+
+          const rendimiento = obtenerRendimientoPorVehiculo();
+          const litros = distanciaKm / rendimiento;
+          const precioGas = 24;
+          const gastoGas = litros * precioGas;
+
+          updateResultado(`
+            <p><strong>Distancia:</strong> ${distanciaKm.toFixed(2)} km</p>
+            <p><strong>Duración estimada (${horario}):</strong> ${duracionAjustada}</p>
+            <p><strong>Consumo de gasolina:</strong> ${litros.toFixed(2)} L ($${gastoGas.toFixed(2)} MXN)</p>
+            <p style="margin-top: 15px; font-weight: 900; font-size: 1.1rem; color: #ff7f50;">
+              Gasto total estimado: $${gastoGas.toFixed(2)} MXN
+            </p>
+          `);
+
+          const instruccionesDiv = document.getElementById("instrucciones");
+          instruccionesDiv.innerHTML = "";
+          leg.steps.forEach((step, index) => {
+            const div = document.createElement("div");
+            div.style.marginBottom = "8px";
+            div.innerHTML = `${index + 1}. ${step.instructions}`;
+            instruccionesDiv.appendChild(div);
+          });
+        } else {
+          alert("No se pudo calcular la ruta: " + status);
+        }
+      }
+    );
+  }
+
+  function limpiarMapa() {
+    marcadores.forEach(m => m.setMap(null));
+    marcadores = [];
+    if (directionsRenderer) directionsRenderer.setDirections({ routes: [] });
+    origen = null;
+    destino = null;
+    updateResultado("Haz clic en el mapa o usa el buscador para elegir origen y destino.");
+    document.getElementById("instrucciones").innerHTML = "";
+    document.getElementById("search-origen").value = "";
+    document.getElementById("search-destino").value = "";
+  }
+
+  window.initMap = initMap;
+</script>
+
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATseXRXJunPtS9HPA9RtoKSLbHJpRXqR8&libraries=places&callback=initMap" async defer></script>
+
+</body>
+</html>
+  
